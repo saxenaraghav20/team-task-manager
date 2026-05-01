@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const Project = require("../models/Project");
-const Task = require("../models/Task");
+const Task = require("../models/task");
 const auth = require("../middleware/auth");
 
 // CREATE PROJECT
