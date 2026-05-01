@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const Team = require("../models/Team");
+const Team = require("../models/team");
 const auth = require("../middleware/auth");
 
 // Create team
