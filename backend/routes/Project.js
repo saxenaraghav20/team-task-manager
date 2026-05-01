@@ -3,14 +3,14 @@ const Project = require("../models/Project");
 const Task = require("../models/Task");
 const auth = require("../middleware/auth");
 
-// Create Project
+// CREATE PROJECT
 router.post("/", auth, async (req, res) => {
   try {
     const project = await Project.create({
       name: req.body.name,
-      description: req.body.description,
+      description: req.body.description || "",
       createdBy: req.user.id,
-      members: [req.user.id] // creator is also a member
+      members: [req.user.id], // creator is also a member
     });
 
     res.json(project);
@@ -19,11 +19,11 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
-// Get Projects (only where user is member)
+// GET PROJECTS (only where user is member)
 router.get("/", auth, async (req, res) => {
   try {
     const projects = await Project.find({
-      members: req.user.id
+      members: req.user.id,
     });
 
     res.json(projects);
@@ -32,14 +32,27 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
+// DELETE PROJECT (only creator can delete)
 router.delete("/:id", auth, async (req, res) => {
   try {
+    const project = await Project.findById(req.params.id);
+
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    // Only creator can delete
+    if (project.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ error: "Not authorized" });
+    }
+
     await Project.findByIdAndDelete(req.params.id);
 
-    // Optional: also delete tasks of this project
+    // Delete related tasks
     await Task.deleteMany({ projectId: req.params.id });
 
     res.json({ msg: "Project deleted" });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
