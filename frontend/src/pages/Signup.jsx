@@ -6,14 +6,17 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignup = async () => {
-    try {
-      await axios.post("http://localhost:5000/api/auth/signup", {
+const handleSignup = async () => {
+  try {
+    await axios.post(
+      "https://team-task-manager-production-0047.up.railway.app/api/auth/signup",
+      {
         name,
         email,
         password,
         role: "member",
-      });
+      }
+    );
 
       alert("Signup successful! Please login.");
       window.location.href = "/";
